@@ -11,6 +11,7 @@ mpDraw = mp.solutions.drawing_utils
 
 pTime = 0
 cTime = 0
+fps = 0
 
 while True:
     success, img = cap.read()
@@ -20,17 +21,23 @@ while True:
 
     if results.multi_hand_landmarks:
         for handLms in results.multi_hand_landmarks:
-            mpDraw.draw_landmarks(img, handLms, mpHand.HAND_CONNECTIONQS)
+            for id, lm in enumerate(handLms.landmark):
+                h, w, c = img.shape
+                cx, cy = int(lm.x*w), int(lm.y*h)
+                #print(id, cx, cy)
+                #cv.circle(img, (cx, cy), 15, (255,255, 255), cv.FILLED)
+            mpDraw.draw_landmarks(img, handLms, mpHand.HAND_CONNECTIONS)
 
-    ctime = time.time()
+    cTime = time.time()
     fps = 1/ (cTime-pTime)
     pTime = cTime
 
-    cv.putText(img, str(int(fps)))
+    #cv.putText(img, str(int(fps)))
+    cv.putText(img, str(int(fps)), (10, 70), cv.FONT_HERSHEY_PLAIN, 3,(255, 0, 255), 3)
 
     cv.imshow("image", img)
     if cv.waitKey(1) == ord('q'):
         break
 
 cap.release()
-cv.destroyAllWindows()
+#cv.destroyAllWindows()
